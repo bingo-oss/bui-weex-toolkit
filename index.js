@@ -1,8 +1,8 @@
 #!/usr/bin/env node
-console.log("welcome to use bui-weex cli");
+console.log("Welcome to use bui-weex cli. Powered by BingoSoft.");
 var package = require('./package.json');
 var version = package.version;
-
+ 
 //模版目录
 var template="template";
 
@@ -93,25 +93,15 @@ function displayHelp(){
 	console.log("Usage: bui-weex [options]");
 	console.log("  ")
 	console.log("Options:");
-	console.log("-r                    see bui-weex release versions");
 	console.log("-v                    see toolkit version");
 	console.log("-h                    see options help");
 	console.log("init <projectName>    create bui-weex project");
-}
-
-function displayRelease(){
-	console.log("bui-weex Release:");
-	console.log("0.1.0");
-	console.log("0.2.0");
 }
 
 //处理命令行参数
 var config = {};
 process.argv.slice(2).forEach( function (item) {
   switch (item) {
-  	case "-r":
-  	  displayRelease();
-  	  break;
     case "-v":
       console.log("Toolkit Version:"+version);
       break;
@@ -141,12 +131,8 @@ if(config.action=="init"){
 	mkdir(project_path,function(){
 		copyDir('pj_sample', project_path);
 	});
+  console.log("Success.");
 }
-
-console.log("Success.");
-
-
-
 
 
 

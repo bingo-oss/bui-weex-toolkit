@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
   },
-  "author": "yulsh@bingosoft.net",
+  "author": "余龙生 <yulsh@bingosoft.net>",
   "license": "Apache 2.0",
   "bin": {
     "bui-weex": "./index.js"

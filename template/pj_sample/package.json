@@ -1,0 +1,51 @@
+{
+  "name": "bui-weex",
+  "description": "UI Framework for weex developer",
+  "version": "0.1.0",
+  "main": "index.js",
+  "keywords": [
+    "weex",
+    "vue"
+  ],
+  "author": "<yulsh@bingosoft.net> (tonyyls <yulsh@bingosoft.net>)  <liyueqing@bingosoft.net> (liyueqing <liyueqing@bingosoft.net>)",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bingo-oss/bui-weex.git"
+  },
+  "license": "Apache 2.0",
+  "bugs": {
+    "url": "https://github.com/bingo-oss/bui-weex/issues"
+  },
+  "homepage": "https://github.com/bingo-oss/bui-weex",
+  "scripts": {
+    "sass": "sass --watch src/css:src/css",
+    "dev": "webpack --watch",
+    "serve": "node build/init.js && serve -p 8686",
+    "debug": "weex-devtool",
+    "build": "webpack"
+  },
+  "dependencies": {
+    "vue": "^2.1.8",
+    "vue-router": "^2.1.1",
+    "vuex": "^2.1.1",
+    "vuex-router-sync": "^4.0.1",
+    "weex-vue-render": "^0.11.2"
+  },
+  "devDependencies": {
+    "babel-core": "^6.20.0",
+    "babel-loader": "^6.2.9",
+    "babel-preset-es2015": "^6.18.0",
+    "copy-webpack-plugin": "^4.0.1",
+    "css-loader": "^0.26.1",
+    "ip": "^1.1.4",
+    "node-sass": "^4.5.2",
+    "sass-loader": "^6.0.3",
+    "serve": "^1.4.0",
+    "vue-loader": "^10.0.2",
+    "vue-template-compiler": "^2.1.8",
+    "webpack": "^1.14.0",
+    "weex-devtool": "^0.2.64",
+    "weex-loader": "^0.4.1",
+    "weex-vue-loader": "^0.2.5"
+  }
+}

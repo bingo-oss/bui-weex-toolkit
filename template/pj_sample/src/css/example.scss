@@ -1,0 +1,38 @@
+@import "common";
+
+.container {
+  padding: $nb20;
+}
+.ex-title{
+  font-size: $nb34;
+  padding-left:$nb20;
+  padding-top:$nb10;
+  height: $nb60;
+}
+.ex-btn {
+  margin-top: $nb10;
+  margin-bottom: $nb10;
+}
+
+.fs-little{
+  font-size: $nb30;
+}
+
+.b-p5{
+  background-color: $color_subtitle;
+  padding: $nb5;
+}
+
+.c-y-f{
+  background-color: #fcf8e3;
+}
+.c-b-d{
+  background-color: #d9edf7;
+}
+.c-g-d{
+  background-color: #dff0d8;
+}
+.c-r-f{
+  background-color: #f2dede;
+}
+

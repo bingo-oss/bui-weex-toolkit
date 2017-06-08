@@ -1,0 +1,30 @@
+@import "common";
+
+.radioBox{
+  align-items: center;
+  padding-top: $nb15;
+  padding-bottom: $nb15;
+  padding-left: $nb5;
+  margin-right: $nb40;
+  padding-right: $nb20;
+}
+.label{
+  font-size: $nb30;
+  //color: $color_title;
+  //margin-left: $nb10;
+}
+.disabled{
+  opacity: 0.5;
+}
+.radio-text-default{}
+
+//switch style
+.switchBox{
+  //padding: $nb15
+}
+//.switchBox:active{
+//  background-color: $color_divider;
+//}
+.switchstyle{
+  align-items: flex-start;
+}

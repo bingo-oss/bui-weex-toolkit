@@ -1,0 +1,45 @@
+@import "common";
+//@import "buiweex";
+
+
+.bui-searchbar{
+  background-color: $color_default;
+  padding-left: $nb20;
+  padding-top: $nb15;
+  padding-right: $nb20;
+  padding-bottom: $nb15;
+}
+.bui-input{
+  background-color: $color_white;
+  border-radius: $nb10;
+  padding-left: $nb20;
+  padding-top: $nb15;
+  padding-right: $nb20;
+  padding-bottom: $nb15;
+  position: relative;
+}
+.bui-search-icon-box{
+
+}
+.bui-search-icon-box-text{
+  color: $color_subtitle;
+  font-size: $nb30;
+  padding-left: $nb15;
+}
+.bui-search-input-text{
+  font-size: $nb30;
+  height: $nb40;
+  padding-left: $nb10;
+  padding-right: $nb10;
+}
+.bui-search-search{
+  color: $color_content;
+  font-size: $nb30;
+  padding-left: $nb15;
+  padding-top: $nb15;
+  padding-right: $nb10;
+  padding-bottom: $nb15;
+}
+
+
+

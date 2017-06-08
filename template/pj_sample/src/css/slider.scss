@@ -1,0 +1,42 @@
+@import "common";
+
+.bui-slider{
+  flex-direction: row;
+  width: 750px;
+  position: relative;
+}
+.bui-slider-pages{
+  flex-direction: row;
+  position: relative;
+}
+
+.bui-slider-title{
+  position: absolute;
+  background-color: $color_border;
+  font-size: $nb32;
+  color: $color_title;
+  left: $nb60;
+  top: $nb100;
+  padding: $nb30;
+  padding-top: $nb20;
+  padding-bottom: $nb20;
+  opacity: 0.6;
+  border-radius: $nb10;
+}
+.img{
+  width: 750px;
+  height: 750px;
+}
+.bui-slider-indicator {
+  //background-color: $color_subtitle;
+  width:750px;
+  height: $nb100;
+  position:absolute;
+  bottom: 0;
+  left: 0;
+  item-color: $color_border;
+  item-selectedColor: $color_primary;
+  item-size: $nb20;
+  item-margin: $nb50;
+  opacity: 0.8;
+}

@@ -4,7 +4,7 @@ var yargs = require("yargs");
 var chalk = require('chalk');
 var path = require("path");
 var fs = require("fs-extra");
-var unzip = require("unzip");
+var decompress = require("decompress");
 var jsonfile = require('jsonfile');
 var request = require('request').defaults({
     headers: {
@@ -13,7 +13,7 @@ var request = require('request').defaults({
 });
 
 
-const infoLabel = "-->"
+const infoLabel = chalk.inverse.green("INFO");
 const warningLabel = chalk.inverse("WARN");
 const errorLabel = chalk.inverse("ERROR");
 
@@ -34,6 +34,7 @@ function error(msg) {
 const CACHE_DIR_NAME = ".bui-weex";
 const CACHE_DIR_PATH = path.join(require('os').homedir(), CACHE_DIR_NAME);
 const CACHE_TEMPLATE_PATH = path.join(CACHE_DIR_PATH, "template");
+const TMP_DOWNLOAD_PATH = path.join(CACHE_TEMPLATE_PATH, "download.zip");
 const RELEASES_JSON_PATH = path.join(CACHE_TEMPLATE_PATH, "release.json");
 
 
@@ -74,7 +75,19 @@ function getLastReleasePath() {
  */
 function downloadAndUnzip(url, savePath, cb) {
     log("Trying to download...");
-    let unzipStream = unzip.Extract({ path: CACHE_TEMPLATE_PATH });
+    let file = fs.createWriteStream(TMP_DOWNLOAD_PATH);
+    file.on("close", function () {
+        log("Extracting...");
+        decompress(TMP_DOWNLOAD_PATH, CACHE_TEMPLATE_PATH).then(function () {
+            log("Done extracting.");
+            let origPath = getLastReleasePath();
+            fs.moveSync(origPath, savePath); // 重命名为指定名
+            fs.unlinkSync(TMP_DOWNLOAD_PATH); // 删除下载的压缩包
+            if (cb) cb();
+        })
+    }).on("error", function (err) {
+        console.log(err);
+    });
     request.get(url)
         .on("error", function (err) {
             error(`Error downloading release: ${err}`);
@@ -87,14 +100,7 @@ function downloadAndUnzip(url, savePath, cb) {
         .on("end", function () {
             log("Download finished.");
         })
-        .pipe(unzipStream);
-        
-    unzipStream.on("close", function () {
-        log("Unzip finished.");
-        let origPath = getLastReleasePath();
-        fs.moveSync(origPath, savePath);
-        if (cb) cb();
-    })
+        .pipe(file);
 }
 
 /**
@@ -187,7 +193,7 @@ function displayReleases() {
         if (err) error(err);
         if (res.statusCode != 200) error(`Failed to fetch releases info - ${res.statusCode}: ${res.body}`);
         let tags = JSON.parse(body).map(function(e){return e["tag_name"]});
-        console.log("Avaliable versions:")
+        console.log("Available versions:")
         console.log(chalk.green.underline(tags.join(require("os").EOL)));
     });
 }

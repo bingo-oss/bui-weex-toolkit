@@ -12,6 +12,7 @@ var request = require('request').defaults({
     }
 });
 
+const templateDirName = "templates"
 
 const infoLabel = chalk.inverse.green("INFO");
 const warningLabel = chalk.inverse("WARN");
@@ -21,7 +22,7 @@ function log(msg) {
     console.log(`${infoLabel} ${msg}`);
 }
 
-function warn(msg) {    
+function warn(msg) {
     console.log(chalk.yellow(`${warningLabel} ${msg}`));
 }
 
@@ -69,9 +70,9 @@ function getLastReleasePath() {
 
 /**
  * 把 url (zipball_url) 的内容下载并解压到 savePath
- * @param {string} url 
- * @param {string} savePath 
- * @param {Function} cb 
+ * @param {string} url
+ * @param {string} savePath
+ * @param {Function} cb
  */
 function downloadAndUnzip(url, savePath, cb) {
     log("Trying to download...");
@@ -121,7 +122,7 @@ function fetchRelease(version, cb) {
             log("Cache miss.");
         }
     }
-    
+
     let url = getReleaseUrl(version);
     log(`Fetching release: ${version ? version : "latest"}...`);
     request(url, function (err, res, body) {
@@ -172,10 +173,11 @@ function fetchRelease(version, cb) {
 
 /**
  * 复制 template 文件以创建 bui-weex 工程.
- * @param  {string} [name] project name.
+ * @param  {string} name project name.
  * @param  {string} [version] template version.
+ * @param  {string} [templateName] init src/ dir with specified template
  */
-function initProject(name, version) {
+function initProject(name, version, templateName) {
     if (fs.existsSync(name)) {
         error(`File ${name} already exist.`);
     }
@@ -183,7 +185,19 @@ function initProject(name, version) {
     fetchRelease(version, function (releasePath) {
         log("Copying template file...")
         fs.copySync(releasePath, name);
-        log("Project created.")
+        log("Project created.");
+        if (templateName) {
+            log("Initing template...");
+            let tPath = path.join(name, templateDirName, templateName);
+            if (!fs.existsSync(tPath)) {
+                warn(`Template ${templateName} not exist. Using default template.`);
+                return
+            }
+            let srcPath = path.join(name, "src");
+            fs.removeSync(srcPath);
+            fs.copySync(tPath, srcPath);
+            log("Copy template done.");
+        }
     });
 }
 
@@ -194,16 +208,37 @@ function displayReleases() {
         if (res.statusCode != 200) error(`Failed to fetch releases info - ${res.statusCode}: ${res.body}`);
         let tags = JSON.parse(body).map(function(e){return e["tag_name"]});
         console.log("Available versions:")
-        console.log(chalk.green.underline(tags.join(require("os").EOL)));
+        tags.forEach(t => {
+            console.log(chalk.green.underline(t));
+        })
     });
+}
+
+function getAvailableTemplateNames(projectPath) {
+    let result = [];
+    let tDir = path.join(projectPath, templateDirName);
+    if (!fs.existsSync(tDir)) return result;
+    let files = fs.readdirSync(tDir);
+    for (let f of files) {
+        if (fs.statSync(path.join(tDir, f)).isDirectory()) {
+            result.push(f);
+        }
+    }
+    return result;
 }
 
 var args = yargs
     .command({
         command: "create <name> [version]",
         desc: "Create a bui-weex project. Default to use latest version of template.",
+        builder: (yargs) => {
+            yargs.option('template', {
+                alias: 't',
+                describe: 'Init with specified template.'
+            })
+        },
         handler: function(argv) {
-            initProject(argv.name, argv.version);
+            initProject(argv.name, argv.version, argv.template);
         }
     })
     .command({
@@ -211,6 +246,23 @@ var args = yargs
         desc: "List available version of template releases.",
         handler: function() {
             displayReleases();
+        }
+    })
+    .command({
+        command: "list-template",
+        desc: "List available templates for the newest release.",
+        handler: function() {
+            fetchRelease(null, (projectPath) => {
+                let names = getAvailableTemplateNames(projectPath);
+                if (names.length) {
+                    console.log("Available templates:");
+                    names.forEach(n => {
+                        console.log(chalk.green.underline(n));
+                    })
+                } else {
+                    console.log("No templates available.");
+                }
+            })
         }
     })
     .version() // Use package.json's version

@@ -1,13 +1,13 @@
 {
   "name": "bui-weex-toolkit",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "bui-weex命令行工具，帮助开发人员快速创建bui-weex项目工程",
-  "main": "bui-weex.js",
+  "main": "index.js",
   "scripts": {},
   "author": "余龙生 <yulsh@bingosoft.net>",
   "license": "Apache 2.0",
   "bin": {
-    "bui-weex": "./bui-weex.js"
+    "bui-weex": "./cli.js"
   },
   "repository": {
     "type": "git",

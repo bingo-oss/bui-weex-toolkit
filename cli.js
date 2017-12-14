@@ -48,9 +48,10 @@ function initProject(name, version, templateName) {
         log("Copying template file...")
         fs.copySync(releasePath, name);
         log("Project created.");
+        const templatesDir = path.join(name, 'templates');
         if (templateName) {
             log("Initing template...");
-            let tPath = path.join(name, templateDirName, templateName);
+            let tPath = path.join(templatesDir, templateName);
             if (!fs.existsSync(tPath)) {
                 warn(`Template ${templateName} not exist. Using default template.`);
                 return
@@ -60,6 +61,7 @@ function initProject(name, version, templateName) {
             fs.copySync(tPath, srcPath);
             log("Copy template done.");
         }
+        fs.removeSync(templatesDir);
     });
 }
 

@@ -1,6 +1,6 @@
 {
   "name": "bui-weex-toolkit",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "bui-weex命令行工具，帮助开发人员快速创建bui-weex项目工程",
   "main": "index.js",
   "scripts": {},
@@ -26,6 +26,7 @@
     "fs-extra": "^3.0.1",
     "jsonfile": "^3.0.0",
     "request": "^2.81.0",
+    "tmp": "^0.0.33",
     "yargs": "^8.0.2"
   }
 }

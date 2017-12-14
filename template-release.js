@@ -2,6 +2,7 @@ const jsonfile = require('jsonfile');
 const fs = require("fs-extra");
 const path = require("path");
 const decompress = require('decompress');
+const tmp = require('tmp');
 const request = require('request').defaults({
     headers: {
         'User-Agent': 'node request' // GitHub ask for this.
@@ -24,7 +25,6 @@ class TemplateRelease {
         this.CACHE_DIR_NAME = '.' + name;
         this.CACHE_DIR_PATH = path.join(require('os').homedir(), this.CACHE_DIR_NAME);
         this.CACHE_TEMPLATE_PATH = path.join(this.CACHE_DIR_PATH, "template");
-        this.TMP_DOWNLOAD_PATH = path.join(this.CACHE_TEMPLATE_PATH, "download.zip");
         this.RELEASES_JSON_PATH = path.join(this.CACHE_TEMPLATE_PATH, "release.json");
         this.TEMPLATE_DIR_NAME = "templates"; // 存放各种模版的目录
     }
@@ -74,15 +74,7 @@ class TemplateRelease {
                 console.log('Checking cache...')
                 if (!version) {
                     // When fetch error, and no version specified, try to figure out the latest release.
-                    var latestRleaseInfo = null;
-                    for (let tag in releasesInfo) {
-                        let info = releasesInfo[tag];
-                        if (!latestRleaseInfo) {
-                            latestRleaseInfo = info;
-                        } else {
-                            if (Date.parse(info.time) > Date.parse(latestRleaseInfo.time)) latestRleaseInfo = info;
-                        }
-                    }
+                    let latestRleaseInfo = this.getCachedReleaseInfo();
                     if (latestRleaseInfo) {
                         // Figured out latest release in cache.
                         console.log(`Found latest release in cache: ${latestRleaseInfo.tag}.`)
@@ -90,7 +82,8 @@ class TemplateRelease {
                         return;
                     }
                 }
-                cb(`Failed to fetch release of ${version ? version : "latest"}`);
+                cb(`Failed to fetch release of ${version ? version : "latest"}: ${errorInfo}`);
+                return;
             }
             // Successfully fetched info.
             let info = JSON.parse(body);
@@ -135,6 +128,38 @@ class TemplateRelease {
         return result;
     }
 
+    /**
+     * 返回缓存里的 release 信息
+     * @param {string} [version] 指定版本，不指定则返回最新
+     * @return {Object} release 信息
+     */
+    getCachedReleaseInfo(version) {
+        let releasesInfo = this._readReleaseJSON();
+        if (version) {
+            return releasesInfo[version];
+        }
+        let latestRleaseInfo = null;
+        for (let tag in releasesInfo) {
+            let info = releasesInfo[tag];
+            if (!latestRleaseInfo) {
+                latestRleaseInfo = info;
+            } else {
+                if (Date.parse(info.time) > Date.parse(latestRleaseInfo.time)) latestRleaseInfo = info;
+            }
+        }
+        return latestRleaseInfo;
+    }
+
+    /**
+     * 返回缓存里的 release 路径
+     * @param {string} [version] 指定版本，不指定则返回最新
+     * @return {string} release 路径
+     */
+    getCachedRelease(version) {
+        let info = this.getCachedReleaseInfo(version);
+        return info ? path.join(this.CACHE_TEMPLATE_PATH, info.path) : null;
+    }
+
     _readReleaseJSON() {
         fs.ensureFileSync(this.RELEASES_JSON_PATH);
         try {
@@ -158,14 +183,15 @@ class TemplateRelease {
      */
      _downloadAndUnzip(url, savePath, cb) {
         console.log("Trying to download...");
-        let file = fs.createWriteStream(this.TMP_DOWNLOAD_PATH);
+        const TMP_DOWNLOAD_PATH = tmp.tmpNameSync() + ".zip";
+        let file = fs.createWriteStream(TMP_DOWNLOAD_PATH);
         file.on("close", () => {
             console.log("Extracting...");
-            decompress(this.TMP_DOWNLOAD_PATH, this.CACHE_TEMPLATE_PATH).then(() => {
+            decompress(TMP_DOWNLOAD_PATH, this.CACHE_TEMPLATE_PATH).then(() => {
                 console.log('Done extracting.')
                 let origPath = this._getLastReleasePath();
                 fs.moveSync(origPath, savePath); // 重命名为指定名
-                fs.unlinkSync(this.TMP_DOWNLOAD_PATH); // 删除下载的压缩包
+                fs.unlinkSync(TMP_DOWNLOAD_PATH); // 删除下载的压缩包
                 cb && cb();
             })
         }).on("error", (err) => {

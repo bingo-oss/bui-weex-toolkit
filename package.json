@@ -1,6 +1,6 @@
 {
   "name": "bui-weex-toolkit",
-  "version": "1.2.1",
+  "version": "1.2.3",
   "description": "bui-weex命令行工具，帮助开发人员快速创建bui-weex项目工程",
   "main": "index.js",
   "scripts": {},
